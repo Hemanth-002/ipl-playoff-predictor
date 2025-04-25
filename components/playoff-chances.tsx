@@ -45,14 +45,41 @@ export default function PlayoffChances() {
     };
   }, []);
 
-  // Calculate playoff chance based on points
-  const getPlayoffChance = (points: number) => {
-    if (points >= 16) return 100;
-    if (points >= 14) return 90;
-    if (points >= 12) return 75;
-    if (points >= 10) return 50;
-    if (points >= 8) return 25;
-    return 10;
+  // Calculate playoff chance based on points, NRR and remaining matches
+  const getPlayoffChance = (team: typeof ipl2025PointsTable[0]) => {
+    const remainingMatches = 14 - team.matches;
+    const maxPossiblePoints = team.points + (remainingMatches * 2);
+    
+    // Base chance on current points with more granular steps
+    let baseChance = 0;
+    if (team.points >= 18) baseChance = 100;
+    else if (team.points >= 16) baseChance = 95;
+    else if (team.points >= 14) baseChance = 85;
+    else if (team.points >= 12) baseChance = 70;
+    else if (team.points >= 10) baseChance = 50;
+    else if (team.points >= 8) baseChance = 35;
+    else if (team.points >= 6) baseChance = 20;
+    else if (team.points >= 4) baseChance = 10;
+    else if (team.points >= 2) baseChance = 5;
+    else baseChance = 2;
+
+    // Adjust based on NRR with more granular steps
+    let nrrAdjustment = 0;
+    if (team.nrr > 1.0) nrrAdjustment = 15;
+    else if (team.nrr > 0.5) nrrAdjustment = 10;
+    else if (team.nrr > 0.2) nrrAdjustment = 5;
+    else if (team.nrr > 0) nrrAdjustment = 2;
+    else if (team.nrr < -0.5) nrrAdjustment = -5;
+    else if (team.nrr < -0.2) nrrAdjustment = -2;
+    
+    // Adjust based on remaining matches
+    const remainingMatchesAdjustment = remainingMatches > 5 ? 10 : remainingMatches > 3 ? 5 : 0;
+    
+    // Calculate final chance
+    let finalChance = baseChance + nrrAdjustment + remainingMatchesAdjustment;
+    
+    // Ensure chance stays between 0 and 100
+    return Math.max(0, Math.min(finalChance, 100));
   };
 
   // Create a sorted array of teams with playoff chances
@@ -62,7 +89,7 @@ export default function PlayoffChances() {
       return {
         ...team,
         id: teamInfo?.id || team.team,
-        playoffChance: getPlayoffChance(team.points),
+        playoffChance: getPlayoffChance(team),
       };
     })
     .sort((a, b) => b.playoffChance - a.playoffChance);

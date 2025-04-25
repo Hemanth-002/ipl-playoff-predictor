@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -18,11 +17,11 @@ import {
 } from "@/components/ui/card";
 import { ipl2025Teams, ipl2025PointsTable } from "@/lib/data";
 import Image from "next/image";
-import { TeamStanding } from "@/lib/types";
 
 export default function StandingsTable() {
-  const [standings, setStandings] =
-    useState<TeamStanding[]>(ipl2025PointsTable);
+  const sortedStandings = [...ipl2025PointsTable].sort(
+    (a, b) => b.points - a.points
+  );
 
   return (
     <Card>
@@ -49,23 +48,48 @@ export default function StandingsTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {standings.map((team, index) => {
+            {sortedStandings.map((team, index) => {
               // Find the team info by matching the team name
               const teamInfo = ipl2025Teams.find((t) => t.name === team.team);
 
-              // Calculate playoff chance based on points (simplified logic)
-              const playoffChance =
-                team.points >= 16
-                  ? 100
-                  : team.points >= 14
-                  ? 90
-                  : team.points >= 12
-                  ? 75
-                  : team.points >= 10
-                  ? 50
-                  : team.points >= 8
-                  ? 25
-                  : 10;
+              // Calculate playoff chance based on points, NRR and remaining matches
+              const remainingMatches = 14 - team.matches;
+              const maxPossiblePoints = team.points + remainingMatches * 2;
+
+              // Base chance on current points with more granular steps
+              let baseChance = 0;
+              if (team.points >= 18) baseChance = 100;
+              else if (team.points >= 16) baseChance = 95;
+              else if (team.points >= 14) baseChance = 85;
+              else if (team.points >= 12) baseChance = 70;
+              else if (team.points >= 10) baseChance = 50;
+              else if (team.points >= 8) baseChance = 35;
+              else if (team.points >= 6) baseChance = 20;
+              else if (team.points >= 4) baseChance = 10;
+              else if (team.points >= 2) baseChance = 5;
+              else baseChance = 2;
+
+              // Adjust based on NRR with more granular steps
+              let nrrAdjustment = 0;
+              if (team.nrr > 1.0) nrrAdjustment = 15;
+              else if (team.nrr > 0.5) nrrAdjustment = 10;
+              else if (team.nrr > 0.2) nrrAdjustment = 5;
+              else if (team.nrr > 0) nrrAdjustment = 2;
+              else if (team.nrr < -0.5) nrrAdjustment = -5;
+              else if (team.nrr < -0.2) nrrAdjustment = -2;
+
+              // Adjust based on remaining matches
+              const remainingMatchesAdjustment =
+                remainingMatches > 5 ? 10 : remainingMatches > 3 ? 5 : 0;
+
+              // Calculate final chance
+              const playoffChance = Math.max(
+                0,
+                Math.min(
+                  baseChance + nrrAdjustment + remainingMatchesAdjustment,
+                  100
+                )
+              );
 
               const playoffChanceColor =
                 playoffChance > 75

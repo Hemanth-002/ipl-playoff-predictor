@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -30,7 +30,20 @@ export default function ScenarioSimulator() {
   const [isCalculating, setIsCalculating] = useState(false);
   const [error, setError] = useState("");
   const [simulationProgress, setSimulationProgress] = useState(0);
-  const [numSimulations, setNumSimulations] = useState(10000);
+  const [showNoScenariosError, setShowNoScenariosError] = useState(false);
+  const [numSimulations, setNumSimulations] = useState(100000);
+
+  const handleTeamChange = (value: string) => {
+    setTargetTeam(value);
+    setScenarios([]);
+    setShowNoScenariosError(false);
+  };
+
+  const handlePositionChange = (value: string) => {
+    setTargetPosition(value);
+    setScenarios([]);
+    setShowNoScenariosError(false);
+  };
 
   const handleSimulate = () => {
     if (!targetTeam || !targetPosition) {
@@ -43,6 +56,7 @@ export default function ScenarioSimulator() {
     setSimulationProgress(0);
     setScenarios([]);
 
+    let scenariosPresent = true;
     // Simulate calculation with progress updates
     const interval = setInterval(() => {
       setSimulationProgress((prev) => {
@@ -99,7 +113,7 @@ export default function ScenarioSimulator() {
 
         // Set the results
         setScenarios(targetTeamScenarios);
-
+        if (targetTeamScenarios.length == 0) scenariosPresent = false;
         // Clear the interval and set progress to 100%
         clearInterval(interval);
         setSimulationProgress(100);
@@ -108,6 +122,7 @@ export default function ScenarioSimulator() {
         console.error(err);
       } finally {
         setIsCalculating(false);
+        setShowNoScenariosError(!scenariosPresent);
       }
     }, 2000);
   };
@@ -167,7 +182,7 @@ export default function ScenarioSimulator() {
             <label className="text-sm font-medium mb-1 block">
               Select Team
             </label>
-            <Select value={targetTeam} onValueChange={setTargetTeam}>
+            <Select value={targetTeam} onValueChange={handleTeamChange}>
               <SelectTrigger>
                 <SelectValue placeholder="Choose a team" />
               </SelectTrigger>
@@ -198,7 +213,7 @@ export default function ScenarioSimulator() {
             <label className="text-sm font-medium mb-1 block">
               Target Position
             </label>
-            <Select value={targetPosition} onValueChange={setTargetPosition}>
+            <Select value={targetPosition} onValueChange={handlePositionChange}>
               <SelectTrigger>
                 <SelectValue placeholder="Select position" />
               </SelectTrigger>
@@ -435,7 +450,7 @@ export default function ScenarioSimulator() {
               </Card>
             )}
           </div>
-        ) : targetTeam && targetPosition && !isCalculating ? (
+        ) : showNoScenariosError ==  true ? (
           <div className="p-4 rounded-lg border bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800">
             <div className="flex items-center gap-3">
               <AlertCircle className="h-6 w-6 text-red-600 dark:text-red-400" />
