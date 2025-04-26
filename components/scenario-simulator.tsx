@@ -320,8 +320,8 @@ export default function ScenarioSimulator() {
             </div>
 
             {scenarios.length > 0 && (
-              <Card>
-                <CardHeader>
+              <Card className="border-0 shadow-none">
+                <CardHeader className="px-0">
                   <CardTitle className="text-lg">Sample Scenarios</CardTitle>
                   <CardDescription>
                     Here are some sample scenarios where{" "}
@@ -329,7 +329,7 @@ export default function ScenarioSimulator() {
                     {getOrdinalSuffix(Number(targetPosition))} place
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-0">
                   <div className="space-y-6">
                     {scenarios.slice(0, 3).map((scenario, scenarioIndex) => (
                       <div
@@ -341,14 +341,24 @@ export default function ScenarioSimulator() {
                         </h3>
 
                         <div className="overflow-x-auto">
-                          <table className="w-full text-sm">
+                          <table className="w-full text-sm min-w-[500px]">
                             <thead>
                               <tr className="border-b">
-                                <th className="text-left py-2">Team</th>
-                                <th className="text-center py-2">P</th>
-                                <th className="text-center py-2">W</th>
-                                <th className="text-center py-2">L</th>
-                                <th className="text-center py-2">Pts</th>
+                                <th className="text-left py-1.5 sm:py-2">
+                                  Team
+                                </th>
+                                <th className="text-center py-1.5 sm:py-2 px-1 sm:px-2">
+                                  P
+                                </th>
+                                <th className="text-center py-1.5 sm:py-2 px-1 sm:px-2">
+                                  W
+                                </th>
+                                <th className="text-center py-1.5 sm:py-2 px-1 sm:px-2">
+                                  L
+                                </th>
+                                <th className="text-center py-1.5 sm:py-2 px-1 sm:px-2">
+                                  Pts
+                                </th>
                               </tr>
                             </thead>
                             <tbody>
@@ -371,9 +381,9 @@ export default function ScenarioSimulator() {
                                           : undefined,
                                     }}
                                   >
-                                    <td className="py-2">
-                                      <div className="flex items-center gap-2">
-                                        <div className="w-5 h-5 relative">
+                                    <td className="py-1.5 sm:py-2">
+                                      <div className="flex items-center gap-1.5 sm:gap-2">
+                                        <div className="w-4 h-4 sm:w-5 sm:h-5 relative">
                                           <Image
                                             src={getTeamLogo(team.teamId)}
                                             alt={getTeamName(team.teamId)}
@@ -381,19 +391,21 @@ export default function ScenarioSimulator() {
                                             className="object-contain"
                                           />
                                         </div>
-                                        <span>{getTeamName(team.teamId)}</span>
+                                        <span className="text-xs sm:text-sm">
+                                          {getTeamName(team.teamId)}
+                                        </span>
                                       </div>
                                     </td>
-                                    <td className="text-center py-2">
+                                    <td className="text-center py-1.5 sm:py-2 px-1 sm:px-2 text-xs sm:text-sm">
                                       {team.matches}
                                     </td>
-                                    <td className="text-center py-2">
+                                    <td className="text-center py-1.5 sm:py-2 px-1 sm:px-2 text-xs sm:text-sm">
                                       {team.wins}
                                     </td>
-                                    <td className="text-center py-2">
+                                    <td className="text-center py-1.5 sm:py-2 px-1 sm:px-2 text-xs sm:text-sm">
                                       {team.losses}
                                     </td>
-                                    <td className="text-center py-2 font-bold">
+                                    <td className="text-center py-1.5 sm:py-2 px-1 sm:px-2 text-xs sm:text-sm font-bold">
                                       {team.points}
                                     </td>
                                   </tr>
@@ -411,9 +423,9 @@ export default function ScenarioSimulator() {
                               (match: any, matchIndex: number) => (
                                 <li
                                   key={matchIndex}
-                                  className="flex items-center gap-2 p-2 rounded bg-muted"
+                                  className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 rounded bg-muted text-xs sm:text-sm"
                                 >
-                                  <div className="w-6 h-6 relative">
+                                  <div className="w-5 h-5 sm:w-6 sm:h-6 relative">
                                     <Image
                                       src={getTeamLogo(match.team1)}
                                       alt={getTeamName(match.team1)}
@@ -423,7 +435,7 @@ export default function ScenarioSimulator() {
                                   </div>
                                   <span>{getTeamShortName(match.team1)}</span>
                                   <span>vs</span>
-                                  <div className="w-6 h-6 relative">
+                                  <div className="w-5 h-5 sm:w-6 sm:h-6 relative">
                                     <Image
                                       src={getTeamLogo(match.team2)}
                                       alt={getTeamName(match.team2)}
@@ -432,7 +444,7 @@ export default function ScenarioSimulator() {
                                     />
                                   </div>
                                   <span>{getTeamShortName(match.team2)}</span>
-                                  <ArrowRight className="h-4 w-4" />
+                                  <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4" />
                                   <span className="font-medium">
                                     {match.winner === match.team1
                                       ? `${getTeamShortName(match.team1)} wins`
@@ -450,7 +462,7 @@ export default function ScenarioSimulator() {
               </Card>
             )}
           </div>
-        ) : showNoScenariosError ==  true ? (
+        ) : showNoScenariosError == true ? (
           <div className="p-4 rounded-lg border bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800">
             <div className="flex items-center gap-3">
               <AlertCircle className="h-6 w-6 text-red-600 dark:text-red-400" />
