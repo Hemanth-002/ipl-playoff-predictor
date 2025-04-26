@@ -22,34 +22,32 @@ import Image from "next/image";
 
 export default function PlayoffChances() {
   const [leftMargin, setLeftMargin] = useState(120);
-  
-  // Update margins based on screen size
+
   useEffect(() => {
     const updateMargins = () => {
-      if (window.innerWidth < 640) {
-        setLeftMargin(60);
+      if (window.innerWidth < 480) {
+        setLeftMargin(10); // super small for tiny phones
+      } else if (window.innerWidth < 640) {
+        setLeftMargin(20); // small margin for normal phones
       } else if (window.innerWidth < 768) {
-        setLeftMargin(80);
+        setLeftMargin(40);
       } else if (window.innerWidth < 1024) {
-        setLeftMargin(100);
+        setLeftMargin(80);
       } else {
         setLeftMargin(120);
       }
     };
-    
+
     updateMargins();
-    window.addEventListener('resize', updateMargins);
-    
-    return () => {
-      window.removeEventListener('resize', updateMargins);
-    };
+    window.addEventListener("resize", updateMargins);
+    return () => window.removeEventListener("resize", updateMargins);
   }, []);
 
   // Calculate playoff chance based on points, NRR and remaining matches
-  const getPlayoffChance = (team: typeof ipl2025PointsTable[0]) => {
+  const getPlayoffChance = (team: (typeof ipl2025PointsTable)[0]) => {
     const remainingMatches = 14 - team.matches;
-    const maxPossiblePoints = team.points + (remainingMatches * 2);
-    
+    const maxPossiblePoints = team.points + remainingMatches * 2;
+
     // Base chance on current points with more granular steps
     let baseChance = 0;
     if (team.points >= 18) baseChance = 100;
@@ -71,13 +69,14 @@ export default function PlayoffChances() {
     else if (team.nrr > 0) nrrAdjustment = 2;
     else if (team.nrr < -0.5) nrrAdjustment = -5;
     else if (team.nrr < -0.2) nrrAdjustment = -2;
-    
+
     // Adjust based on remaining matches
-    const remainingMatchesAdjustment = remainingMatches > 5 ? 10 : remainingMatches > 3 ? 5 : 0;
-    
+    const remainingMatchesAdjustment =
+      remainingMatches > 5 ? 10 : remainingMatches > 3 ? 5 : 0;
+
     // Calculate final chance
     let finalChance = baseChance + nrrAdjustment + remainingMatchesAdjustment;
-    
+
     // Ensure chance stays between 0 and 100
     return Math.max(0, Math.min(finalChance, 100));
   };

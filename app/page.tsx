@@ -1,7 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StandingsTable from "@/components/standings-table";
 import PlayoffChances from "@/components/playoff-chances";
-import TeamPerformance from "@/components/team-performance";
 import ScenarioSimulator from "@/components/scenario-simulator";
 
 export default function Home() {
@@ -18,11 +17,11 @@ export default function Home() {
           </p>
         </div>
 
-        <Tabs defaultValue="standings" className="w-full">
+        <Tabs defaultValue="chances" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="standings">Standings</TabsTrigger>
+            <TabsTrigger value="standings">Points Table</TabsTrigger>
             <TabsTrigger value="chances">Playoff Chances</TabsTrigger>
-            <TabsTrigger value="simulator">Scenario Simulator</TabsTrigger>
+            <TabsTrigger value="simulator">Simulator</TabsTrigger>
           </TabsList>
           <TabsContent value="standings" className="mt-6">
             <StandingsTable />
