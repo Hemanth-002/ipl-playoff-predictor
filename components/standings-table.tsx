@@ -19,9 +19,12 @@ import { ipl2025Teams, ipl2025PointsTable } from "@/lib/data";
 import Image from "next/image";
 
 export default function StandingsTable() {
-  const sortedStandings = [...ipl2025PointsTable].sort(
-    (a, b) => b.points - a.points
-  );
+  const sortedStandings = [...ipl2025PointsTable].sort((a, b) => {
+    if (b.points === a.points) {
+      return b.nrr - a.nrr;
+    }
+    return b.points - a.points;
+  });
 
   return (
     <Card>
